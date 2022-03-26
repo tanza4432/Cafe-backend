@@ -66,7 +66,7 @@ const Login = async (req, res, next) => {
       .where('password', '==', hashPassword)
     const fetchAccount = await accounts.get()
     if (fetchAccount.empty) {
-      res.status(404).send({ type: 'none' })
+      res.status(404).send('false')
     } else {
       return res.status(200).send({
         id: fetchAccount.docs[0].id,
