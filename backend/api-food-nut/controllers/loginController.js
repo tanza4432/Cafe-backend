@@ -66,7 +66,16 @@ const Login = async (req, res, next) => {
       .where('password', '==', hashPassword)
     const fetchAccount = await accounts.get()
     if (fetchAccount.empty) {
-      res.status(404).send('false')
+      res.status(404).send({
+        id: '',
+        email: '',
+        id_store: '',
+        name: '',
+        status: '',
+        tel: '',
+        type: '',
+        verify: false
+      })
     } else {
       return res.status(200).send({
         id: fetchAccount.docs[0].id,
@@ -75,7 +84,8 @@ const Login = async (req, res, next) => {
         name: fetchAccount.docs[0].data().name,
         status: fetchAccount.docs[0].data().status,
         tel: fetchAccount.docs[0].data().tel,
-        type: fetchAccount.docs[0].data().type
+        type: fetchAccount.docs[0].data().type,
+        verify: true
       })
     }
   } catch (error) {
