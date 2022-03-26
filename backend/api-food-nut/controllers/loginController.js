@@ -66,7 +66,7 @@ const Login = async (req, res, next) => {
       .where('password', '==', hashPassword)
     const fetchAccount = await accounts.get()
     if (fetchAccount.empty) {
-      res.status(404).send({
+      res.status(200).send({
         id: '',
         email: '',
         id_store: '',
