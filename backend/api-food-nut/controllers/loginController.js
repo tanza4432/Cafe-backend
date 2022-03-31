@@ -1,14 +1,14 @@
-'use strict'
+"use strict";
 
-const firebase = require('../db')
-const Account = require('../models/login')
-const firestore = firebase.firestore()
-var md5 = require('md5')
+const firebase = require("../db");
+const Account = require("../models/login");
+const firestore = firebase.firestore();
+var md5 = require("md5");
 
 const addAccount = async (req, res, next) => {
   try {
-    const data = req.body
-    const hashPassword = md5(data.password)
+    const data = req.body;
+    const hashPassword = md5(data.password);
     const newdata = {
       email: data.email,
       id_store: data.id_store,
@@ -16,27 +16,24 @@ const addAccount = async (req, res, next) => {
       password: hashPassword,
       status: data.status,
       tel: data.tel,
-      type: data.type
-    }
-    await firestore
-      .collection('account')
-      .doc()
-      .set(newdata)
-    res.status(200).send('true')
+      type: data.type,
+    };
+    await firestore.collection("account").doc().set(newdata);
+    res.status(200).send("true");
   } catch (error) {
-    res.status(400).send(error.message)
+    res.status(400).send(error.message);
   }
-}
+};
 
 const getAllAccount = async (req, res, next) => {
   try {
-    const account = await firestore.collection('account')
-    const data = await account.get()
-    const AccountArray = []
+    const account = await firestore.collection("account");
+    const data = await account.get();
+    const AccountArray = [];
     if (data.empty) {
-      res.status(404).send('ไม่พบข้อมูลใด')
+      res.status(404).send("ไม่พบข้อมูลใด");
     } else {
-      data.forEach(doc => {
+      data.forEach((doc) => {
         const account = new Account(
           doc.id,
           doc.data().email,
@@ -45,37 +42,37 @@ const getAllAccount = async (req, res, next) => {
           doc.data().tel,
           doc.data().type,
           doc.data().status
-        )
-        AccountArray.push(account)
-      })
-      res.send(AccountArray)
+        );
+        AccountArray.push(account);
+      });
+      res.send(AccountArray);
     }
   } catch (error) {
-    res.status(400).send(error.message)
+    res.status(400).send(error.message);
   }
-}
+};
 
 const Login = async (req, res, next) => {
   try {
-    const email = req.params.email
-    const password = req.params.password
-    const hashPassword = md5(password)
+    const email = req.params.email;
+    const password = req.params.password;
+    const hashPassword = md5(password);
     const accounts = await firestore
-      .collection('account')
-      .where('email', '==', email)
-      .where('password', '==', hashPassword)
-    const fetchAccount = await accounts.get()
+      .collection("account")
+      .where("email", "==", email)
+      .where("password", "==", hashPassword);
+    const fetchAccount = await accounts.get();
     if (fetchAccount.empty) {
       res.status(200).send({
-        id: '',
-        email: '',
-        id_store: '',
-        name: '',
-        status: '',
-        tel: '',
-        type: '',
-        verify: false
-      })
+        id: "",
+        email: "",
+        id_store: "",
+        name: "",
+        status: "",
+        tel: "",
+        type: "",
+        verify: false,
+      });
     } else {
       return res.status(200).send({
         id: fetchAccount.docs[0].id,
@@ -85,43 +82,52 @@ const Login = async (req, res, next) => {
         status: fetchAccount.docs[0].data().status,
         tel: fetchAccount.docs[0].data().tel,
         type: fetchAccount.docs[0].data().type,
-        verify: true
-      })
+        verify: true,
+      });
     }
   } catch (error) {
-    res.status(400).send(error.message)
+    res.status(400).send(error.message);
   }
-}
+};
 
 const updateAccount = async (req, res, next) => {
   try {
-    const id = req.params.id
-    const data = req.body
-    const Account = await firestore.collection('account').doc(id)
-    await Account.update(data)
-    res.send('แก้ไขข้อมูลแล้ว')
+    const id = req.params.id;
+    const data = req.body;
+    const Account = await firestore.collection("account").doc(id);
+    await Account.update(data);
+    res.send("แก้ไขข้อมูลแล้ว");
   } catch (error) {
-    res.status(400).send(error.message)
+    res.status(400).send(error.message);
   }
-}
+};
 
 const deleteAccount = async (req, res, next) => {
   try {
-    const id = req.params.id
-    await firestore
-      .collection('account')
-      .doc(id)
-      .delete()
-    res.send('ลบสำเร็จ')
+    const id = req.params.id;
+    await firestore.collection("account").doc(id).delete();
+    res.send("ลบสำเร็จ");
   } catch (error) {
-    res.status(400).send(error.message)
+    res.status(400).send(error.message);
   }
-}
+};
+
+const getAccountByID = async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    const account = await firestore.collection("account").doc(id);
+    const data = await account.get();
+    return res.status(200).send(data.data());
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
+};
 
 module.exports = {
   addAccount,
   getAllAccount,
   Login,
   updateAccount,
-  deleteAccount
-}
+  deleteAccount,
+  getAccountByID,
+};
