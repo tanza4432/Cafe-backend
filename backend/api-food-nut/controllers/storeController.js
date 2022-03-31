@@ -40,8 +40,10 @@ const getStore = async (req, res, next) => {
 const getStoreByID = async (req, res, next) => {
   try {
     const id = req.params.id
-    const store = await firestore.collection('stores').doc(id)
-    const data = await store.get()
+    const Store = await firestore
+      .collection('stores')
+      .where('idstore', '==', id)
+    const data = await Store.get()
 
     return res.status(200).send(data.data())
   } catch (error) {
