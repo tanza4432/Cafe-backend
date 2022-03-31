@@ -44,8 +44,8 @@ const getStoreByID = async (req, res, next) => {
       .collection('stores')
       .where('idstore', '==', id)
     const data = await Store.get()
-
-    return res.status(200).send(data.data())
+    var result = data.docs[0].data()
+    return res.status(200).send(result)
   } catch (error) {
     return res.status(400).send(error)
   }
