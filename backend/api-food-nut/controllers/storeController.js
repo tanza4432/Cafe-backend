@@ -48,7 +48,7 @@ const getStoreByID = async (req, res, next) => {
     if (result === undefined) {
       return res.status(200).send('false')
     } else {
-      return res.status(200).send(result)
+      return res.status(200).send(result.data())
     }
   } catch (error) {
     return res.status(400).send(error)
@@ -89,8 +89,16 @@ const updateStore = async (req, res, next) => {
   try {
     const id = req.params.id
     const data = req.body
-    const Store = await firestore.collection('stores').doc(id)
-    await Store.update(data)
+    const Store = await firestore
+      .collection('stores')
+      .where('idstore', '==', id)
+    const data_store = await Store.get()
+    var result = data_store.docs[0]
+    await firestore
+      .collection('stores')
+      .doc(result.id)
+      .update(data)
+
     res.status(200).send('อัพเดตข้อมูลแล้ว')
   } catch (error) {
     res.status(400).send(error.message)
