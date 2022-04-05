@@ -21,6 +21,7 @@ const {
   updateStore,
   addimgStore,
   getStoreView,
+  getStoreViewID,
   addimgStoreView,
   delimgStoreView,
   updateimgStoreView,
@@ -55,15 +56,16 @@ router.put('/store/update/:id', updateStore)
 router.post('/store/uploadimg/:id', multer.single('img'), addimgStore)
 
 // storeView
-router.get('/store/imgView', getStoreView)
+router.get('/storeview/imgView', getStoreView)
+router.get('/storeview/imgView/:id', getStoreViewID)
 router.post(
-  '/store/uploadimgView/:id/:folderid',
+  '/storeview/uploadimgView/:id/:folderid',
   multer.single('img'),
   addimgStoreView
 )
-router.patch('/store/delimgView/:id/:index', delimgStoreView)
+router.patch('/storeview/delimgView/:id/:index', delimgStoreView)
 router.put(
-  '/store/uploadimgView/:id/:folderid/:index',
+  '/storeview/uploadimgView/:id/:folderid/:index',
   multer.single('img'),
   updateimgStoreView
 )

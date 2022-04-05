@@ -174,6 +174,30 @@ const getStoreView = async (req, res, next) => {
   }
 }
 
+const getStoreViewID = async (req, res, next) => {
+  try {
+    const id = req.params.id
+    const Store = await firestore
+      .collection('image_store')
+      .where('idstore', '==', id)
+    const data = await Store.get()
+    var result = data.docs[0]
+    if (result === undefined) {
+      return res.status(200).send('false')
+    } else {
+      const fetchStore = {
+        id: result.id,
+        idstore: result.data().idstore,
+        image: result.data().image
+      }
+
+      return res.status(200).send(fetchStore)
+    }
+  } catch (error) {
+    return res.status(400).send(error)
+  }
+}
+
 const addimgStoreView = async (req, res, next) => {
   const id = req.params.id
   const idfolder = req.params.folderid
@@ -297,6 +321,7 @@ module.exports = {
   updateStore,
   addimgStore,
   getStoreView,
+  getStoreViewID,
   addimgStoreView,
   delimgStoreView,
   updateimgStoreView
