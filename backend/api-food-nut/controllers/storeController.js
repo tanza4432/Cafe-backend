@@ -26,7 +26,8 @@ const getStore = async (req, res, next) => {
         doc.data().open,
         doc.data().tel,
         doc.data().total_review,
-        doc.data().website
+        doc.data().website,
+        doc.data().status
       )
       storeArray.push(fetchStore)
     })
@@ -100,6 +101,42 @@ const updateStore = async (req, res, next) => {
       .update(data)
 
     res.status(200).send('อัพเดตข้อมูลแล้ว')
+  } catch (error) {
+    res.status(400).send(error.message)
+  }
+}
+
+const deleteStore = async (req, res, next) => {
+  try {
+    const id = req.params.id
+    const Store = await firestore
+      .collection('stores')
+      .where('idstore', '==', id)
+    const Review = await firestore
+      .collection('review')
+      .where('idstore', '==', id)
+    const Image_Store = await firestore
+      .collection('image_store')
+      .where('idstore', '==', id)
+    const data_store = await Store.get()
+    const data_review = await Review.get()
+    const data_image_store = await Image_Store.get()
+    var storeid = data_store.docs[0]
+    var reviewid = data_review.docs[0]
+    var image_storeid = data_image_store.docs[0]
+    await firestore
+      .collection('stores')
+      .doc(storeid.id)
+      .delete()
+    await firestore
+      .collection('review')
+      .doc(reviewid.id)
+      .delete()
+    await firestore
+      .collection('image_store')
+      .doc(image_storeid.id)
+      .delete()
+    res.send('ลบสำเร็จ')
   } catch (error) {
     res.status(400).send(error.message)
   }
@@ -324,5 +361,6 @@ module.exports = {
   getStoreViewID,
   addimgStoreView,
   delimgStoreView,
-  updateimgStoreView
+  updateimgStoreView,
+  deleteStore
 }

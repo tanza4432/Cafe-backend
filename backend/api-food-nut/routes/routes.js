@@ -25,7 +25,8 @@ const {
   addimgStoreView,
   delimgStoreView,
   updateimgStoreView,
-  getStoreByID
+  getStoreByID,
+  deleteStore
 } = require('../controllers/storeController')
 
 const {
@@ -54,6 +55,7 @@ router.get('/store/:id', getStoreByID)
 router.post('/store/add', addStore)
 router.put('/store/update/:id', updateStore)
 router.post('/store/uploadimg/:id', multer.single('img'), addimgStore)
+router.delete('/store/delete/:id', deleteStore)
 
 // storeView
 router.get('/storeview/imgView', getStoreView)

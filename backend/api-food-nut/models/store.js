@@ -1,5 +1,5 @@
 class StoreModel {
-  constructor(
+  constructor (
     id,
     address,
     idstore,
@@ -10,21 +10,22 @@ class StoreModel {
     open,
     tel,
     total_review,
-    website
+    website,
+    status
   ) {
-    this.id = id;
-    this.address = address;
-    this.idstore = idstore;
-    this.image = image;
-    this.latitude = latitude;
-    this.longitude = longitude;
-    this.name = name;
-    this.open = open;
-    this.tel = tel;
-    this.total_review = total_review;
-    this.website = website;
+    this.id = id
+    this.address = address
+    this.idstore = idstore
+    this.image = image
+    this.latitude = latitude
+    this.longitude = longitude
+    this.name = name
+    this.open = open
+    this.tel = tel
+    this.total_review = total_review
+    this.website = website
+    this.status = status
   }
 }
 
-
-module.exports = StoreModel;
+module.exports = StoreModel
