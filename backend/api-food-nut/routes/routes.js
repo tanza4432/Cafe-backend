@@ -30,6 +30,7 @@ const {
 } = require('../controllers/storeController')
 
 const {
+  getComment,
   commentImgReview,
   commentReview,
   commentLike
@@ -73,6 +74,7 @@ router.put(
 )
 
 // ReviewComment
+router.get('/review/comment/:id', getComment)
 router.post('/review/commentImg/:id', multer.array('img'), commentImgReview)
 router.put('/review/comment/:id', commentReview)
 router.put('/review/like/:id', commentLike)

@@ -6,6 +6,43 @@ const StoreModel = require('../models/store')
 const storage = require('../storage')
 const bucket = storage.bucket()
 
+const getComment = async (req, res, next) => {
+  try {
+    const id = req.params.id
+    const array = []
+    const Store = await firestore
+      .collection('review')
+      .where('idstore', '==', id)
+    const data = await Store.get()
+    var result = data.docs[0]
+    if (result === undefined) {
+      return res.status(200).send('false')
+    } else {
+      const temp = {
+        idstore: result.data().idstore,
+        data: []
+      }
+      for (var i = 0; i < result.data().data.length; i++) {
+        const account = await firestore
+          .collection('account')
+          .doc(result.data().data[i].id)
+        const result_account = await account.get()
+        const new_data = {
+          id: result.data().data[i].id,
+          name: result_account.data().name,
+          star: result.data().data[i].star,
+          comment: result.data().data[i].comment,
+          image: result.data().data[i].image
+        }
+        temp.data.push(new_data)
+      }
+      return res.status(200).send(temp)
+    }
+  } catch (error) {
+    return res.status(400).send(error)
+  }
+}
+
 const commentImgReview = async (req, res, next) => {
   try {
     const id = req.params.id
@@ -93,5 +130,6 @@ const commentLike = async (req, res, next) => {
 module.exports = {
   commentImgReview,
   commentReview,
-  commentLike
+  commentLike,
+  getComment
 }
