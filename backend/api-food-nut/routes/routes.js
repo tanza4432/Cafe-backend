@@ -37,7 +37,7 @@ const {
 } = require("../controllers/reviewController");
 
 const { sendEmail } = require("../controllers/forgotController");
-const { getFoodByID } = require("../controllers/foodController");
+const { getFoodByID, addFoodByID } = require("../controllers/foodController");
 
 const router = express.Router();
 
@@ -82,6 +82,7 @@ router.put("/review/like/:id", commentLike);
 
 // Food
 router.get("/food/:id", getFoodByID);
+router.post("/food/:id", multer.single("img"), addFoodByID);
 
 module.exports = {
   routes: router,
