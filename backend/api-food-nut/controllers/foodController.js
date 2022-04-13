@@ -23,24 +23,29 @@ const getFoodByID = async (req, res, next) => {
 };
 
 const addFoodByID = async (req, res, next) => {
+  const id = req.params.id;
+  const formData = req.body;
+
+  const folder = "food-menu";
+  const filename = `${folder}/${Date.now()}`;
+  const fileUpload = bucket.file(filename);
+
+  const blobStream = fileUpload.createWriteStream({
+    metadata: {
+      contentType: req.file.mimetype,
+      name: filename,
+    },
+  });
+
+  blobStream.on("error", (err) => {
+    res.status(405).json(err);
+  });
   try {
-    const id = req.params.id;
-    const formData = req.body;
-
-    const folder = "food-menu";
-    const filename = `${folder}/${Date.now()}`;
-    const fileUpload = bucket.file(filename);
-
-    const blobStream = fileUpload.createWriteStream({
-      metadata: {
-        contentType: req.file.mimetype,
-        name: filename,
-      },
-    });
-
-    blobStream.on("error", (err) => {
-      res.status(405).json(err);
-    });
+    const getFoodDatabase = await firestore
+      .collection("menu")
+      .where("idstore", "==", id);
+    const check = await getFoodDatabase.get();
+    const result = check.docs[0].data();
 
     blobStream.on("finish", async () => {
       const file = bucket.file(`food-menu/${filename}`);
@@ -56,28 +61,50 @@ const addFoodByID = async (req, res, next) => {
         filename.split("/")[1] +
         "?alt=media";
 
-      const foodFirebase = await firestore
-        .collection("menu")
-        .where("idstore", "==", id);
-
-      const data = await foodFirebase.get();
-      const result = data.docs[0].data();
       result.list.push({
         name: formData.name,
         image: link,
         price: formData.price,
       });
 
-      const updateMenu = await firestore.collection("menu").doc(id);
+      const updateMenu = await firestore
+        .collection("menu")
+        .doc(check.docs[0].id);
 
       await updateMenu.update(result);
 
-      return res.status(200).send(result);
+      return res.status(200).send("success");
     });
 
     blobStream.end(req.file.buffer);
   } catch (error) {
-    return res.status(400).send(error.message);
+    blobStream.on("finish", async () => {
+      const file = bucket.file(`food-menu/${filename}`);
+      const link =
+        "https://firebasestorage.googleapis.com/v0" +
+        file.parent.baseUrl +
+        "/" +
+        file.parent.name +
+        file.baseUrl +
+        "/" +
+        folder +
+        "%2F" +
+        filename.split("/")[1] +
+        "?alt=media";
+
+      const result = { idstore: id, list: [] };
+      result.list.push({
+        name: formData.name,
+        image: link,
+        price: formData.price,
+      });
+
+      await firestore.collection("menu").doc().set(result);
+
+      return res.status(200).send("success");
+    });
+
+    blobStream.end(req.file.buffer);
   }
 };
 
