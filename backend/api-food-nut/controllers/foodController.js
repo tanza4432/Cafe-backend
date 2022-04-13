@@ -108,7 +108,30 @@ const addFoodByID = async (req, res, next) => {
   }
 };
 
+const deleteFoodByID = async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    const name = req.params.name;
+    const search = await firestore
+      .collection("menu")
+      .where("idstore", "==", id);
+    const gatID = await search.get();
+
+    const result = gatID.docs[0].data();
+    const index = result.list.findIndex((item) => item.name === name);
+    result.list.splice(index, 1);
+
+    const updateFood = await firestore.collection("menu").doc(gatID.docs[0].id);
+    await updateFood.update(result);
+
+    return res.status(200).send("success");
+  } catch (error) {
+    return res.status(400).send(error.message);
+  }
+};
+
 module.exports = {
   getFoodByID,
   addFoodByID,
+  deleteFoodByID,
 };

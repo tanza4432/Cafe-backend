@@ -37,7 +37,11 @@ const {
 } = require("../controllers/reviewController");
 
 const { sendEmail } = require("../controllers/forgotController");
-const { getFoodByID, addFoodByID } = require("../controllers/foodController");
+const {
+  getFoodByID,
+  addFoodByID,
+  deleteFoodByID,
+} = require("../controllers/foodController");
 
 const router = express.Router();
 
@@ -83,6 +87,7 @@ router.put("/review/like/:id", commentLike);
 // Food
 router.get("/food/:id", getFoodByID);
 router.post("/food/:id", multer.single("img"), addFoodByID);
+router.delete("/food/:id/:name", deleteFoodByID);
 
 module.exports = {
   routes: router,
